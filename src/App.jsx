@@ -10,6 +10,11 @@ function App() {
     setTasks([...tasks, task]);
     setTask("")
   }
+
+  function handleDelete(index){
+    const filteredTasks = tasks.filter((_, i) => i !== index);
+    setTasks(filteredTasks)
+  }
   
   return (
     <>
@@ -24,7 +29,7 @@ function App() {
       <div>
         <ul id="task-list">
           {tasks.map((tasko, index) => (
-            <li key={index}>{tasko}</li>
+            <li key={index}>{tasko} <button onClick={() => handleDelete(index)} >Delete</button></li>
           ))}
         </ul>
       </div>
