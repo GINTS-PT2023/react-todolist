@@ -7,6 +7,11 @@ function App() {
 
   function handleSubmit (e){
     e.preventDefault();
+
+    if(!task){
+      return
+    }
+
     setTasks([...tasks, task]);
     setTask("")
   }
