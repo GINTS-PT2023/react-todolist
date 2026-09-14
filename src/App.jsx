@@ -1,40 +1,82 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("")
+  const [tasks, setTasks] = useState(() => {
+    return JSON.parse(localStorage.getItem("tasks")) || []
+  })
+  const [editIndex, setEditIndex] = useState(null)
 
-  function handleSubmit (e){
-    e.preventDefault();
+  function handleSubmit(e) {
+    e.preventDefault()
 
-    if(!task){
+    if (!task.trim()) {
       return
     }
 
-    setTasks([...tasks, task]);
+    if (editIndex !== null) {
+      setTasks(
+        tasks.map((item, index) =>
+          index === editIndex ? task : item
+        )
+      )
+
+      setEditIndex(null)
+    } else {
+      setTasks([...tasks, task])
+    }
+
     setTask("")
   }
 
-  function handleDelete(index){
-    const filteredTasks = tasks.filter((_, i) => i !== index);
-    setTasks(filteredTasks)
+  function handleDelete(index) {
+    setTasks(tasks.filter((_, i) => i !== index))
   }
-  
+
+  function handleEdit(index) {
+    setTask(tasks[index])
+    setEditIndex(index)
+  }
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks))
+  }, [tasks])
+
   return (
     <>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="task-input">Task </label>
-          <input type="text" id='task-input' name='task-input' value={task} onChange={(e) => setTask(e.target.value)}/>
-          <button type='submit'>Create</button>
+
+          <input
+            type="text"
+            id="task-input"
+            name="task-input"
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+          />
+
+          <button type="submit">
+            {editIndex !== null ? "Update" : "Create"}
+          </button>
         </div>
       </form>
 
       <div>
         <ul id="task-list">
           {tasks.map((tasko, index) => (
-            <li key={index}>{tasko} <button onClick={() => handleDelete(index)} >Delete</button></li>
+            <li key={index}>
+              {tasko}
+
+              <button onClick={() => handleDelete(index)}>
+                Delete
+              </button>
+
+              <button onClick={() => handleEdit(index)}>
+                Edit
+              </button>
+            </li>
           ))}
         </ul>
       </div>
